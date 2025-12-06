@@ -166,15 +166,53 @@ def main():
     print("\n📝 Formatowanie promptów...")
     dataset = dataset.map(format_prompts, batched=True)
     
-    # Sprawdź czy istnieją checkpointy do wznowienia
+    # Sprawdź czy istnieją checkpointy do wznowienia (Lokalnie LUB na HuggingFace)
     resume_checkpoint = None
+    
+    # 1. Sprawdź lokalnie
     if os.path.exists(OUTPUT_DIR):
         checkpoints = [d for d in os.listdir(OUTPUT_DIR) if d.startswith("checkpoint-")]
         if checkpoints:
-            # Wybierz ostatni checkpoint
             latest = sorted(checkpoints, key=lambda x: int(x.split("-")[1]))[-1]
             resume_checkpoint = os.path.join(OUTPUT_DIR, latest)
-            print(f"🔄 Znaleziono checkpoint do wznowienia: {resume_checkpoint}")
+            print(f"🔄 Znaleziono LOKALNY checkpoint: {resume_checkpoint}")
+
+    # 2. Jeśli brak lokalnego, sprawdź HuggingFace Hub (Smart Resume)
+    if not resume_checkpoint:
+        print(f"🔍 Sprawdzanie checkpointów na Hugging Hub ({HF_REPO})...")
+        try:
+            from huggingface_hub import list_repo_files, snapshot_download
+            files = list_repo_files(repo_id=HF_REPO, token=os.getenv("HF_TOKEN"))
+            # Szukamy folderów checkpoint-X
+            hf_checkpoints = [f for f in files if "checkpoint-" in f]
+            
+            if hf_checkpoints:
+                # Znajdź najwyższy numer checkpointu (wyciągamy z ścieżek np. checkpoint-100/config.json)
+                import re
+                checkpoint_nums = []
+                for f in hf_checkpoints:
+                    match = re.search(r"checkpoint-(\d+)", f)
+                    if match:
+                        checkpoint_nums.append(int(match.group(1)))
+                
+                if checkpoint_nums:
+                    latest_step = max(checkpoint_nums)
+                    checkpoint_name = f"checkpoint-{latest_step}"
+                    print(f"☁️ Znaleziono ZDALNY checkpoint: {checkpoint_name}")
+                    print("📥 Pobieranie ostaniego checkpointu z HF (może chwilę potrwać)...")
+                    
+                    # Pobierz tylko ten folder checkpointu
+                    snapshot_download(
+                        repo_id=HF_REPO,
+                        allow_patterns=[f"{checkpoint_name}/*"],
+                        local_dir=OUTPUT_DIR,
+                        token=os.getenv("HF_TOKEN")
+                    )
+                    resume_checkpoint = os.path.join(OUTPUT_DIR, checkpoint_name)
+                    print(f"✅ Pobrano i wznowiono z: {resume_checkpoint}")
+        except Exception as e:
+            print(f"⚠️ Nie udało się sprawdzić/pobrać zdalnych checkpointów: {e}")
+            print("   Rozpoczynam trening od zera.")
     
     # Training arguments
     training_args = get_training_args(resume_from_checkpoint=resume_checkpoint)

@@ -42,9 +42,9 @@ def main():
     parser.add_argument(
         "--step", 
         type=str, 
-        choices=["init", "data", "train", "all"], 
+        choices=["init", "data", "train", "all", "serve"], 
         required=True,
-        help="Wybierz krok do wykonania: init (repo), data (generowanie), train (trening), all (wszystko)"
+        help="Wybierz krok: init (repo), data (generowanie), train (trening), serve (ollama), all (bez serve)"
     )
     
     args = parser.parse_args()
@@ -78,6 +78,18 @@ def main():
     if args.step in ["train", "all"]:
         print("\n=== KROK 3: Trening Modelu (Unsloth + LoRA) ===")
         if not run_script(os.path.join(scripts_dir, "train.py")):
+            sys.exit(1)
+            
+    # Krok 4: Serwowanie (Ollama)
+    if args.step == "serve":
+        print("\n=== KROK 4: Uruchamianie Serwera Inferencyjnego (Ollama) ===")
+        # Skrypt bashowy wymaga uruchomienia przez bash
+        serve_script = os.path.join(scripts_dir, "serve_ollama.sh")
+        os.chmod(serve_script, 0o755)
+        try:
+            subprocess.run([serve_script], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Błąd serwera: {e}")
             sys.exit(1)
             
     if args.step == "all":
