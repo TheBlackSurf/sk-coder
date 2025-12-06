@@ -14,6 +14,8 @@ apt-get update && apt-get install -y git wget nano htop tmux
 
 # 2. Instalacja zależności Python
 echo "🐍 Instalacja zależności Python..."
+# Ogranicz liczbę wątków kompilacji, aby nie wysadzić RAMu (częsty problem przy Flash Attn)
+export MAX_JOBS=4
 pip install --upgrade pip
 
 # Unsloth wymaga specyficznej instalacji, najpierw pytorch
