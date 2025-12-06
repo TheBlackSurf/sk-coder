@@ -1,0 +1,64 @@
+# ========================================
+# SK-Coder v2.0 - Git Ignore
+# ========================================
+
+# KRYTYCZNE: Secrets (API Keys)
+devops/secrets.sh
+
+# Dataset (duże pliki)
+dataset/
+*.jsonl
+*.json
+
+# Model Checkpoints
+checkpoints/
+*.bin
+*.safetensors
+*.pth
+*.pt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs
+*.log
+training.log
+nohup.out
+
+# Ollama
+ollama/*.log
+ollama/public_url.txt
+ollama/*.gguf
+
+# W&B
+wandb/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

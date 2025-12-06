@@ -1,0 +1,38 @@
+# ========================================
+# SK-Coder v2.0 - Python Dependencies
+# ========================================
+
+# Core ML Libraries
+torch>=2.1.0
+transformers>=4.36.0
+accelerate>=0.25.0
+datasets>=2.15.0
+
+# Unsloth (Efficient Fine-tuning)
+unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git
+
+# vLLM (Inference for Teacher Model)
+vllm>=0.2.6
+
+# Training & LoRA
+peft>=0.7.0
+trl>=0.7.4
+bitsandbytes>=0.41.3
+
+# Monitoring & Logging
+wandb>=0.16.0
+
+# Hugging Face Hub
+huggingface_hub>=0.19.0
+
+# Utilities
+numpy>=1.24.0
+scipy>=1.11.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+
+# Optional: XFormers for memory optimization
+xformers>=0.0.23; platform_system != "Windows"
+
+# Optional: Flash Attention 2
+# flash-attn>=2.3.0  # Uncomment if you want flash-attention (requires CUDA)
