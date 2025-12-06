@@ -3,7 +3,7 @@
 # ========================================
 
 # Core ML Libraries
-torch>=2.1.0
+# torch>=2.1.0  # Commented out to use system-provided PyTorch (RunPod)
 transformers>=4.36.0
 accelerate>=0.25.0
 datasets>=2.15.0

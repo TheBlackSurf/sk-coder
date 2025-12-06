@@ -16,7 +16,7 @@ apt-get update && apt-get install -y git wget nano htop tmux
 echo "🐍 Instalacja zależności Python..."
 # Ogranicz liczbę wątków kompilacji, aby nie wysadzić RAMu (częsty problem przy Flash Attn)
 export MAX_JOBS=2
-pip install --upgrade pip
+pip install --upgrade pip --no-cache-dir
 
 # Unsloth wymaga specyficznej instalacji, najpierw pytorch
 # RunPod zazwyczaj ma już PyTorch, ale sprawdźmy wersję
@@ -25,19 +25,19 @@ python3 -c "import torch; print(f'PyTorch: {torch.__version__}, CUDA: {torch.ver
 
 # Instalacja Unsloth (optymalizacja pod Ampere/Hopper/Volta)
 echo "   Instalacja Unsloth..."
-pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" --no-cache-dir
 
 # Instalacja reszty zależności z requirements.txt
 if [ -f "requirements.txt" ]; then
     echo "   Instalacja dependencies z requirements.txt..."
-    pip install -r requirements.txt
+    pip install -r requirements.txt --no-cache-dir
 else
     echo "⚠️ Ostrzeżenie: Nie znaleziono requirements.txt w bieżącym katalogu."
 fi
 
 # Instalacja Flash Attention 2 (jeśli dostępne GPU)
 echo "⚡ Instalacja Flash Attention 2 (może chwilę potrwać)..."
-pip install flash-attn --no-build-isolation
+pip install flash-attn --no-build-isolation --no-cache-dir
 
 # 3. Konfiguracja Git i Hugging Face
 echo "🔧 Konfiguracja Git..."
