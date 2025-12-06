@@ -199,15 +199,35 @@ def main():
     trainer.train(resume_from_checkpoint=resume_checkpoint)
     
     # Zapis finalnego modelu
-    print("\n💾 Zapisywanie finalnego modelu...")
-    trainer.save_model(OUTPUT_DIR)
+    # Zapis finalnego modelu (Adaptery)
+    print("\n💾 Zapisywanie finalnego modelu (LoRA)...")
+    model.save_pretrained(OUTPUT_DIR)
+    tokenizer.save_pretrained(OUTPUT_DIR)
     
-    # Push do HuggingFace Hub
-    print(f"\n📤 Wysyłanie modelu do {HF_REPO}...")
-    trainer.push_to_hub()
+    # Push adapterów do HuggingFace Hub
+    print(f"\n📤 Wysyłanie adapterów do {HF_REPO}...")
+    model.push_to_hub(HF_REPO, token=os.getenv("HF_TOKEN"))
+    tokenizer.push_to_hub(HF_REPO, token=os.getenv("HF_TOKEN"))
     
-    print("\n✅ Trening zakończony pomyślnie!")
-    print(f"   Model dostępny na: https://huggingface.co/{HF_REPO}")
+    # --- NOWOŚĆ: Generowanie GGUF dla Ollama ---
+    print("\n📦 Konwertowanie do GGUF (dla Ollama)...")
+    print("   Format: q4_k_m (zbalansowana jakość/prędkość)")
+    
+    try:
+        model.push_to_hub_gguf(
+            HF_REPO, 
+            tokenizer, 
+            quantization_method = "q4_k_m", 
+            token = os.getenv("HF_TOKEN")
+        )
+        print("✅ GGUF wysłany pomyślnie! Twój model jest gotowy do Ollama.")
+    except Exception as e:
+        print(f"⚠️ Błąd eksportu GGUF: {e}")
+        print("   Możesz spróbować ręcznej konwersji później.")
+
+    print("\n✅ Trening i eksport zakończony sukcesem!")
+    print(f"   Model LoRA: https://huggingface.co/{HF_REPO}")
+    print(f"   Model GGUF: https://huggingface.co/{HF_REPO}/tree/main (szukaj pliku .gguf)")
 
 
 if __name__ == "__main__":
