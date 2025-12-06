@@ -2,7 +2,7 @@
 """
 SK-Coder v2.0 - Generowanie Danych (Teacher-Student)
 ====================================================
-Wykorzystuje Qwen2.5-Coder-72B-Instruct z vLLM jako "Teacher"
+Wykorzystuje Qwen2.5-Coder-32B-Instruct z vLLM jako "Teacher"
 do generowania wysokiej jakości danych treningowych.
 
 Wymaga: 2x GPU (tensor_parallel_size=2)
@@ -14,7 +14,7 @@ from typing import List, Dict
 from vllm import LLM, SamplingParams
 
 # Konfiguracja
-TEACHER_MODEL = "Qwen/Qwen2.5-Coder-72B-Instruct"
+TEACHER_MODEL = "Qwen/Qwen2.5-Coder-32B-Instruct"
 OUTPUT_DIR = "dataset"
 TENSOR_PARALLEL = 2
 
@@ -48,7 +48,7 @@ TRAINING_PROMPTS = [
 
 
 class TeacherStudentDataGenerator:
-    """Generator danych treningowych używający modelu Teacher (Qwen 72B)."""
+    """Generator danych treningowych używający modelu Teacher (Qwen 32B)."""
     
     def __init__(self):
         print(f"🚀 Ładowanie modelu Teacher: {TEACHER_MODEL}")
